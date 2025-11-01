@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+		
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+		
+    </PropertyGroup>
+
+    <ItemGroup>
+		
+	    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.4" />
+		
+    </ItemGroup>
+
+    <ItemGroup>
+		
+        <Reference Include="Assembly-CSharp">
+            <HintPath>..\..\SiteLink\SiteLink\bin\Release\net9.0\Assembly-CSharp.dll</HintPath>
+        </Reference>
+		
+        <Reference Include="SiteLink.API">
+            <HintPath>..\..\SiteLink\SiteLink\bin\Release\net9.0\SiteLink.API.dll</HintPath>
+        </Reference>
+		
+        <Reference Include="SiteLink.Portals">
+          <HintPath>..\..\SiteLink.Portals\SiteLink.Portals\bin\Debug\net9.0\SiteLink.Portals.dll</HintPath>
+        </Reference>
+		
+        <Reference Include="UnityEngine.CoreModule">
+            <HintPath>..\..\SiteLink\SiteLink\bin\Release\net9.0\UnityEngine.CoreModule.dll</HintPath>
+        </Reference>
+		
+    </ItemGroup>
+
+</Project>
