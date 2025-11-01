@@ -3,7 +3,7 @@
 # SiteLink.Lobby
 
 **SiteLink.Lobby** is a plugin for [SiteLink](https://github.com/Killers0992/SiteLink) that adds a fully functional **lobby system** to your SCP: Secret Laboratory proxy network.  
-It creates a dedicated lobby world where players can spawn, interact with floating texts, and use portals to connect to other SiteLink-managed servers.
+It creates a dedicated lobby world where players can spawn, and use portals to connect to other SiteLink-managed servers.
 
 ---
 
