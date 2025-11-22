@@ -54,7 +54,9 @@ public class LobbyWorld : World
     {
         client.SetRole(RoleTypeId.Tutorial);
         client.SetHealth(100f);
+
         client.SetSeed(350);
+        client.SendSeed(350);
 
         client.Object.PlayerAuthenticationManager.SyncedUserId = client.PreAuth.UserId;
         client.Object.SendUpdate(client);
