@@ -1,4 +1,5 @@
 ﻿using Lobby.Worlds;
+using Mirror;
 using SiteLink.API.Core;
 using SiteLink.API.Models;
 using SiteLink.API.Networking;
@@ -14,7 +15,20 @@ public class LobbyServer : Server
         Port = 7777,
     }, true) { }
 
-    public override bool OnClientConnecting(Client client) => true;
-    public override void OnClientReady(Client client) => client.SpawnObjects();
-    public override void OnClientSpawnPlayer(Client client) => client.World = new LobbyWorld();
+    public override bool OnSessionConnecting(Session session) => true;
+
+    public override void OnSessionReady(Session session)
+    {
+        session.Connection.AsServer.Send(w =>
+        {
+            w.WriteUShort(NetworkMessages.ObjectSpawnStartedMessage);
+        });
+
+        session.World = new LobbyWorld();
+
+        session.Connection.AsServer.Send(w =>
+        {
+            w.WriteUShort(NetworkMessages.ObjectSpawnFinishedMessage);
+        });
+    }
 }

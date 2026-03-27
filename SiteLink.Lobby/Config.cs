@@ -1,9 +1,17 @@
 ﻿using Lobby.Models;
+using SiteLink.API.Models;
 
 namespace Lobby;
 
 public class Config
 {
+    public string LobbySchematicFile { get; set; } = "";
+
+    public VectorInfo SpawnLocation { get; set; } = new VectorInfo()
+    {
+        Y = -299f,
+    };
+
     public List<TextInfo> Texts { get; set; } = new List<TextInfo>()
     {
         new TextInfo()
@@ -18,7 +26,7 @@ public class Config
     {
         new PortalInfo()
         {
-            TargetServer = "vanilla1",
+            TargetServer = "server1",
             PositionX = 0f,
             PositionY = -298f,
             PositionZ = -4f,

@@ -1,8 +1,14 @@
-﻿using Lobby.Models;
+﻿using CustomRendering;
+using Lobby.Models;
+using Mirror;
 using PlayerRoles;
 using Portals.Core;
 using SiteLink.API.Core;
+using SiteLink.API.Enums;
+using SiteLink.API.Misc;
 using SiteLink.API.Networking;
+using SiteLink.API.Networking.Common;
+using SiteLink.API.Networking.Components;
 using SiteLink.API.Networking.Objects;
 using UnityEngine;
 
@@ -10,25 +16,23 @@ namespace Lobby.Worlds;
 
 public class LobbyWorld : World
 {
-    //public ConfigSyncObject ConfigSync;
-    public WaypointToyObject Waypoint;
-    public TextToyObject TextToy;
-    public TextToyObject TextToy2;
+    public ConfigSynchronizerObject ConfigSync;
 
     public LobbyWorld() : base("Lobby")
     {
         DestroyOnEmpty = true;
 
-        AddWaypoint(new Vector3(0f, -300f, 0f));
+        AddWaypoint(MainClass.Singleton.Config.SpawnLocation.ToVector());
 
-        //ConfigSync = new ConfigSyncObject(this);
+        ConfigSync = new ConfigSynchronizerObject(this);
+        ConfigSync.ServerConfigSynchronizer.ServerName = "Proxy";
 
         foreach (TextInfo text in MainClass.Singleton.Config.Texts)
         {
-            TextToyObject textObject = new TextToyObject(this)
-            {
-                Position = new Vector3(text.PositionX, text.PositionY, text.PositionZ),
-            };
+            TextToyObject textObject = new TextToyObject(this);
+
+            textObject.TextToy.Position = new Vector3(text.PositionX, text.PositionY, text.PositionZ);
+            textObject.TextToy.Scale = Vector3.one;
 
             textObject.TextToy.TextFormat = text.Text;
             textObject.TextToy.DisplaySize = new Vector2(150f, 25f);
@@ -38,6 +42,11 @@ public class LobbyWorld : World
         {
             new Portal(this, portal.TargetServer, portal.Text, new Vector3(portal.PositionX, portal.PositionY, portal.PositionZ), new Quaternion(0f, portal.Rotation, 0f, 0f));
         }
+
+        if (Schematic.LoadFromFile(MainClass.Singleton.Config.LobbySchematicFile, out Schematic schematic))
+        {
+            schematic.Load(this, MainClass.Singleton.Config.SpawnLocation);
+        }
     }
 
     public override void Update()
@@ -45,21 +54,32 @@ public class LobbyWorld : World
         PortalController.Update(this);
     }
 
-    public override void OnLoad(Client client)
+    public override void OnLoad(Session session)
     {
-        client.SpawnPlayer();
+        session.SpawnPlayer(MainClass.Singleton.Config.SpawnLocation.ToVector());
     }
 
-    public override void OnObjectsSpawned(Client client)
+    public override void OnObjectsSpawned(Session session)
     {
-        client.SetRole(RoleTypeId.Tutorial);
-        client.SetHealth(100f);
+        session.Connection.AsServer.Seed(350);
 
-        client.SetSeed(350);
-        client.SendSeed(350);
+        session.Connection.AsServer.Role(session.NetworkId, RoleTypeId.Tutorial);
+        session.Connection.AsServer.Health(session.NetworkId, 100f);
+        session.Connection.AsServer.Stamina(session.NetworkId, 100f);
 
-        client.Object.PlayerAuthenticationManager.SyncedUserId = client.PreAuth.UserId;
-        client.Object.SendUpdate(client);
+        session.Player.PlayerAuthenticationManager.SyncedUserId = session.UserId;
+
+        session.AsClient.Noclip(session.NetworkId, true);
+
+        SyncListObject<byte> list = (SyncListObject<byte>)session.Player.PlayerEffectsController.SyncObjects[0];
+
+        list.Set((int)EffectType.FogControl + 1, (byte)(FogType.None + 1));
+
+        session.Player.PlayerEffectsController.SyncObjectsDirtyBits = 1;
+
+        session.Player.SendUpdate(session);
+
+        //ConfigSync.SendUpdate(session);
     }
 
     public override void OnDestroy()
