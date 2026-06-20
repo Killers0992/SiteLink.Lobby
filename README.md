@@ -14,8 +14,8 @@ To use **SiteLink.Lobby**, the following are required:
 
 | Dependency | Version |
 |-------------|----------|
-| [SiteLink](https://github.com/Killers0992/SiteLink) | **0.1.0** or newer |
-| [SiteLink.Portals](https://github.com/Killers0992/SiteLink.Portals) | **1.0.1** |
+| [SiteLink](https://github.com/Killers0992/SiteLink) | **2.0.1** or newer |
+| [SiteLink.Portals](https://github.com/Killers0992/SiteLink.Portals) | **1.0.2** |
 
 Make sure both are installed and working before adding this plugin.
 
