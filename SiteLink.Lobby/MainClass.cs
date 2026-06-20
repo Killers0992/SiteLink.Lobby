@@ -9,6 +9,7 @@ namespace Lobby;
 public class MainClass : Plugin<Config>
 {
     public static MainClass Singleton { get; private set; }
+    public static LobbyServer ServerInstance { get; private set; }
 
     public static Dictionary<string, PortalInfo> ServerByNames = new Dictionary<string, PortalInfo>();
 
@@ -35,7 +36,15 @@ public class MainClass : Plugin<Config>
     public override void OnLoad(IServiceCollection collection)
     {
         Singleton = this;
-        Server.Register(new LobbyServer());
+        ServerInstance = new LobbyServer();
+        Server.Register(ServerInstance);
+    }
+
+    public override void OnUnload()
+    {
+        ServerInstance?.SharedWorld.Dispose();
+        ServerInstance = null;
+        Singleton = null;
     }
 
     public override void LoadConfig()

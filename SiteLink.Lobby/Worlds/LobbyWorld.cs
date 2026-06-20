@@ -14,6 +14,7 @@ namespace Lobby.Worlds;
 public class LobbyWorld : World
 {
     public ConfigSynchronizerObject ConfigSync;
+    private DateTime _nextPositionUpdate;
 
     public static Quaternion GetQuaternionFromEuler(Vector3 eulerDegrees)
     {
@@ -64,7 +65,7 @@ public class LobbyWorld : World
 
     public LobbyWorld() : base("Lobby")
     {
-        DestroyOnEmpty = true;
+        DestroyOnEmpty = false;
 
         AddWaypoint(MainClass.Singleton.Config.SpawnLocation.ToVector());
 
@@ -96,22 +97,46 @@ public class LobbyWorld : World
     public override void Update()
     {
         PortalController.Update(this);
+
+        if (_nextPositionUpdate > DateTime.UtcNow)
+            return;
+
+        SendFpcPositions();
+        _nextPositionUpdate = DateTime.UtcNow.AddMilliseconds(10);
     }
 
     public override void OnLoad(Session session)
     {
-        session.SpawnPlayer(MainClass.Singleton.Config.SpawnLocation.ToVector());
+        if (session.Player == null)
+            session.SpawnPlayer(MainClass.Singleton.Config.SpawnLocation.ToVector());
+
+        session.Player.PlayerAuthenticationManager.SyncedUserId = session.UserId;
     }
 
     public override void OnObjectsSpawned(Session session)
     {
         session.Connection.AsServer.Seed(350);
 
-        session.Connection.AsServer.Role(session.NetworkId, RoleTypeId.Tutorial);
-        session.Connection.AsServer.Health(session.NetworkId, 100f);
-        session.Connection.AsServer.Stamina(session.NetworkId, 100f);
+        Session[] players = GetClientsSnapshot()
+            .Where(player => player.Player != null)
+            .ToArray();
 
-        session.Player.PlayerAuthenticationManager.SyncedUserId = session.UserId;
+        foreach (Session player in players)
+        {
+            session.Connection.AsServer.Role(player.NetworkId, RoleTypeId.Tutorial);
+            session.Connection.AsServer.Health(player.NetworkId, 100f);
+        }
+
+        foreach (Session observer in players)
+        {
+            if (observer == session || observer.Connection == null)
+                continue;
+
+            observer.Connection.AsServer.Role(session.NetworkId, RoleTypeId.Tutorial);
+            observer.Connection.AsServer.Health(session.NetworkId, 100f);
+        }
+
+        session.Connection.AsServer.Stamina(session.NetworkId, 100f);
     }
 
     public override void OnDestroy()

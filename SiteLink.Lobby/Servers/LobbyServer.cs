@@ -8,6 +8,8 @@ namespace Lobby;
 
 public class LobbyServer : Server
 {
+    public LobbyWorld SharedWorld { get; } = new();
+
     public LobbyServer() : base("Lobby", new ServerSettings()
     {
         DisplayName = "Lobby",
@@ -25,7 +27,7 @@ public class LobbyServer : Server
             w.WriteUShort(NetworkMessages.ObjectSpawnStartedMessage);
         });
 
-        session.World = new LobbyWorld();
+        session.World = SharedWorld;
 
         session.Connection.AsServer.Send(w =>
         {
