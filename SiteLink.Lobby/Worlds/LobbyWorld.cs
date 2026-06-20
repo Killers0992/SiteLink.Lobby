@@ -15,6 +15,53 @@ public class LobbyWorld : World
 {
     public ConfigSynchronizerObject ConfigSync;
 
+    public static Quaternion GetQuaternionFromEuler(Vector3 eulerDegrees)
+    {
+        float x = eulerDegrees.x * Mathf.Deg2Rad * 0.5f;
+        float y = eulerDegrees.y * Mathf.Deg2Rad * 0.5f;
+        float z = eulerDegrees.z * Mathf.Deg2Rad * 0.5f;
+
+        float sinX = Mathf.Sin(x);
+        float cosX = Mathf.Cos(x);
+
+        float sinY = Mathf.Sin(y);
+        float cosY = Mathf.Cos(y);
+
+        float sinZ = Mathf.Sin(z);
+        float cosZ = Mathf.Cos(z);
+
+        Quaternion q;
+
+        q.x = sinX * cosY * cosZ + cosX * sinY * sinZ;
+        q.y = cosX * sinY * cosZ - sinX * cosY * sinZ;
+        q.z = cosX * cosY * sinZ - sinX * sinY * cosZ;
+        q.w = cosX * cosY * cosZ + sinX * sinY * sinZ;
+
+        return Normalize(q);
+    }
+
+    public static Quaternion GetQuaternionFromEuler(float x, float y, float z)
+    {
+        return GetQuaternionFromEuler(new Vector3(x, y, z));
+    }
+
+    private static Quaternion Normalize(Quaternion q)
+    {
+        float length = Mathf.Sqrt(q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w);
+
+        if (length < Mathf.Epsilon)
+            return Quaternion.identity;
+
+        float inverse = 1f / length;
+
+        return new Quaternion(
+            q.x * inverse,
+            q.y * inverse,
+            q.z * inverse,
+            q.w * inverse
+        );
+    }
+
     public LobbyWorld() : base("Lobby")
     {
         DestroyOnEmpty = true;
@@ -37,7 +84,7 @@ public class LobbyWorld : World
 
         foreach (PortalInfo portal in MainClass.Singleton.Config.Portals)
         {
-            new Portal(this, portal.TargetServer, portal.Text, new Vector3(portal.PositionX, portal.PositionY, portal.PositionZ), new Quaternion(0f, portal.Rotation, 0f, 0f));
+            new Portal(this, portal.TargetServer, () => MainClass.GetPortalTextByServer(portal.TargetServer), new Vector3(portal.PositionX, portal.PositionY, portal.PositionZ), GetQuaternionFromEuler(0f, portal.Rotation, 0f));
         }
 
         if (Schematic.LoadFromFile(MainClass.Singleton.Config.LobbySchematicFile, out Schematic schematic))
