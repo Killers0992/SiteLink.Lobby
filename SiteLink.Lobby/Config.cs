@@ -26,7 +26,7 @@ public class Config
     {
         new PortalInfo()
         {
-            TargetServer = "server1",
+            TargetServer = "default",
             PositionX = 0f,
             PositionY = -298f,
             PositionZ = -4f,
