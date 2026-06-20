@@ -1,6 +1,4 @@
-﻿using CustomRendering;
-using Lobby.Models;
-using Mirror;
+﻿using Lobby.Models;
 using PlayerRoles;
 using Portals.Core;
 using SiteLink.API.Core;
@@ -8,7 +6,6 @@ using SiteLink.API.Enums;
 using SiteLink.API.Misc;
 using SiteLink.API.Networking;
 using SiteLink.API.Networking.Common;
-using SiteLink.API.Networking.Components;
 using SiteLink.API.Networking.Objects;
 using UnityEngine;
 
@@ -68,16 +65,6 @@ public class LobbyWorld : World
         session.Connection.AsServer.Stamina(session.NetworkId, 100f);
 
         session.Player.PlayerAuthenticationManager.SyncedUserId = session.UserId;
-
-        session.AsClient.Noclip(session.NetworkId, true);
-
-        SyncListObject<byte> list = (SyncListObject<byte>)session.Player.PlayerEffectsController.SyncObjects[0];
-
-        list.Set((int)EffectType.FogControl + 1, (byte)(FogType.None + 1));
-
-        session.Player.PlayerEffectsController.SyncObjectsDirtyBits = 1;
-
-        session.Player.SendUpdate(session);
 
         //ConfigSync.SendUpdate(session);
     }

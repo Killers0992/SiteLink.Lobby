@@ -2,7 +2,7 @@
 
     <PropertyGroup>
 		
-        <TargetFramework>net9.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
 		
     </PropertyGroup>
@@ -13,31 +13,23 @@
     </ItemGroup>
 
     <ItemGroup>
-		
-        <Reference Include="Assembly-CSharp">
-            <HintPath>..\..\SiteLink\SiteLink\bin\Release\net9.0\Assembly-CSharp.dll</HintPath>
-        </Reference>
-		
-        <Reference Include="Mirror">
-          <HintPath>..\..\..\SteamLibrary\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\Mirror.dll</HintPath>
-        </Reference>
-		
-        <Reference Include="SiteLink.API">
-          <HintPath>..\..\SiteLink\SiteLink.API\bin\Debug\net9.0\SiteLink.API.dll</HintPath>
-        </Reference>
-		
-        <Reference Include="UnityEngine.CoreModule">
-            <HintPath>..\..\SiteLink\SiteLink\bin\Release\net9.0\UnityEngine.CoreModule.dll</HintPath>
-        </Reference>
+      <ProjectReference Include="..\..\SiteLink\SiteLink.API\SiteLink.API.csproj" />
+    </ItemGroup>
 
-		<Reference Include="SiteLink.Portals" Condition="'$(Configuration)' == 'Debug'">
-			<HintPath>..\..\SiteLink.Portals\SiteLink.Portals\bin\Debug\net9.0\SiteLink.Portals.dll</HintPath>
+    <ItemGroup>
+		<Reference Include="Mirror">
+			<HintPath>$(SL_REFERENCES)\Mirror.dll</HintPath>
 		</Reference>
-
+		<Reference Include="UnityEngine.CoreModule">
+			<HintPath>$(UNITY_REFERENCES)\UnityEngine.CoreModule.dll</HintPath>
+		</Reference>
+		<Reference Include="SiteLink.Portals" Condition="'$(Configuration)' == 'Debug'">
+			<HintPath>..\..\SiteLink.Portals\SiteLink.Portals\bin\Debug\net10.0\SiteLink.Portals.dll</HintPath>
+		</Reference>
 	</ItemGroup>
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Copy SourceFiles="$(TargetDir)$(TargetName).dll" Condition="'$(Configuration)' == 'Debug'" DestinationFolder="D:\VS Projects\SiteLink\SiteLink\bin\Debug\net9.0\win-x64\Plugins" />
+		<Copy SourceFiles="$(TargetDir)$(TargetName).dll" Condition="'$(Configuration)' == 'Debug'" DestinationFolder="D:\VS Projects\SiteLink\SiteLink\bin\Debug\net10.0\win-x64\Plugins" />
 	</Target>
 	
 	

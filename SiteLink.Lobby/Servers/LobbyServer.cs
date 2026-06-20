@@ -13,7 +13,8 @@ public class LobbyServer : Server
         DisplayName = "Lobby",
         Address = "-local-",
         Port = 7777,
-    }, true) { }
+    }, true)
+    { }
 
     public override bool OnSessionConnecting(Session session) => true;
 
