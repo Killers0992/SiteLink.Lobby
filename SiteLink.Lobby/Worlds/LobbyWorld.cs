@@ -112,8 +112,6 @@ public class LobbyWorld : World
         session.Connection.AsServer.Stamina(session.NetworkId, 100f);
 
         session.Player.PlayerAuthenticationManager.SyncedUserId = session.UserId;
-
-        //ConfigSync.SendUpdate(session);
     }
 
     public override void OnDestroy()
