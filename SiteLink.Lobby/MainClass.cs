@@ -6,7 +6,7 @@ using SiteLink.API.Plugins;
 
 namespace Lobby;
 
-public class MainClass : Plugin<Config>
+public class MainClass : Plugin<Config, Translations>
 {
     public static MainClass Singleton { get; private set; }
     public static LobbyServer ServerInstance { get; private set; }
@@ -20,7 +20,7 @@ public class MainClass : Plugin<Config>
             return portal.Text;
         }
 
-        return "Unknown";
+        return Singleton?.Translation.UnknownPortal ?? "Unknown";
     }
 
     public override string Name { get; } = "Lobby";
@@ -32,6 +32,7 @@ public class MainClass : Plugin<Config>
     public override Version Version { get; } = new Version(1, 0, 2);
 
     public override Version ApiVersion { get; } = new Version(SiteLinkAPI.ApiVersionText);
+    public override string Repository => "Killers0992/SiteLink.Lobby";
 
     public override void OnLoad(IServiceCollection collection)
     {
@@ -45,6 +46,7 @@ public class MainClass : Plugin<Config>
         ServerInstance?.SharedWorld.Dispose();
         ServerInstance = null;
         Singleton = null;
+        base.OnUnload();
     }
 
     public override void LoadConfig()

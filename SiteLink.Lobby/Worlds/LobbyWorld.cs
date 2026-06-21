@@ -7,6 +7,7 @@ using SiteLink.API.Misc;
 using SiteLink.API.Networking;
 using SiteLink.API.Networking.Common;
 using SiteLink.API.Networking.Objects;
+using SiteLink.API.Translations;
 using UnityEngine;
 
 namespace Lobby.Worlds;
@@ -15,6 +16,8 @@ public class LobbyWorld : World
 {
     public ConfigSynchronizerObject ConfigSync;
     private DateTime _nextPositionUpdate;
+    private DateTime _nextLocalizedTextUpdate;
+    private readonly List<(TextToyObject Object, string Template)> _localizedTexts = new();
 
     public static Quaternion GetQuaternionFromEuler(Vector3 eulerDegrees)
     {
@@ -79,13 +82,24 @@ public class LobbyWorld : World
             textObject.TextToy.Position = new Vector3(text.PositionX, text.PositionY, text.PositionZ);
             textObject.TextToy.Scale = Vector3.one;
 
-            textObject.TextToy.TextFormat = text.Text;
+            string template = string.IsNullOrWhiteSpace(text.Text)
+                ? MainClass.Singleton.Translation.DefaultText
+                : text.Text;
+            textObject.TextToy.TextFormat = string.Empty;
             textObject.TextToy.DisplaySize = new Vector2(150f, 25f);
+            _localizedTexts.Add((textObject, template));
         }
 
         foreach (PortalInfo portal in MainClass.Singleton.Config.Portals)
         {
-            new Portal(this, portal.TargetServer, () => MainClass.GetPortalTextByServer(portal.TargetServer), new Vector3(portal.PositionX, portal.PositionY, portal.PositionZ), GetQuaternionFromEuler(0f, portal.Rotation, 0f));
+            new Portal(
+                this,
+                portal.TargetServer,
+                () => string.IsNullOrWhiteSpace(portal.Text)
+                    ? MainClass.Singleton.Translation.DefaultPortalText
+                    : MainClass.GetPortalTextByServer(portal.TargetServer),
+                new Vector3(portal.PositionX, portal.PositionY, portal.PositionZ),
+                GetQuaternionFromEuler(0f, portal.Rotation, 0f));
         }
 
         if (Schematic.LoadFromFile(MainClass.Singleton.Config.LobbySchematicFile, out Schematic schematic))
@@ -97,6 +111,17 @@ public class LobbyWorld : World
     public override void Update()
     {
         PortalController.Update(this);
+
+        if (_nextLocalizedTextUpdate <= DateTime.UtcNow)
+        {
+            foreach (Session observer in GetClientsSnapshot())
+            {
+                foreach ((TextToyObject text, string template) in _localizedTexts)
+                    text.SendText(observer, template, TranslationContext.For(observer, plugin: MainClass.Singleton));
+            }
+
+            _nextLocalizedTextUpdate = DateTime.UtcNow.AddSeconds(1);
+        }
 
         if (_nextPositionUpdate > DateTime.UtcNow)
             return;

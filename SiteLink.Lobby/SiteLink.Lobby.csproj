@@ -3,7 +3,11 @@
     <PropertyGroup>
 		
         <TargetFramework>net10.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Product>SiteLink.Lobby</Product>
+		<Description>Adds a shared, localized lobby world to SiteLink.</Description>
+		<Authors>Killers0992</Authors>
+		<Version>1.0.2</Version>
 		
     </PropertyGroup>
 
@@ -12,9 +16,15 @@
 	    <PackageReference Include="SiteLink.API" Version="0.0.3" Condition="'$(Configuration)' == 'Release'" />
     </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\..\SiteLink\SiteLink.API\SiteLink.API.csproj" />
-    </ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\..\SiteLink\SiteLink.API\SiteLink.API.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="Translations\language_en.yml">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
 
     <ItemGroup>
 		<Reference Include="Mirror">
@@ -29,8 +39,14 @@
 	</ItemGroup>
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<MakeDir Directories="D:\VS Projects\SiteLink\SiteLink\bin\Debug\net10.0\win-x64\Plugins\Lobby\Translations" Condition="'$(Configuration)' == 'Debug'" />
 		<Copy SourceFiles="$(TargetDir)$(TargetName).dll" Condition="'$(Configuration)' == 'Debug'" DestinationFolder="D:\VS Projects\SiteLink\SiteLink\bin\Debug\net10.0\win-x64\Plugins" />
+		<Copy SourceFiles="@(LobbyTranslationFiles)" Condition="'$(Configuration)' == 'Debug'" DestinationFolder="D:\VS Projects\SiteLink\SiteLink\bin\Debug\net10.0\win-x64\Plugins\Lobby\Translations" />
 	</Target>
+
+	<ItemGroup>
+		<LobbyTranslationFiles Include="Translations\*.yml" />
+	</ItemGroup>
 	
 	
 </Project>

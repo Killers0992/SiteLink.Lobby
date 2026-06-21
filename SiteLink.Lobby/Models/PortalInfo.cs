@@ -4,7 +4,7 @@ public class PortalInfo
 {
     public string TargetServer { get; set; }
 
-    public string Text { get; set; } = $"<size=5>Server\n<color=orange>%serverName%</color></size>";
+    public string Text { get; set; }
 
     public float PositionX { get; set; }
     public float PositionY { get; set; }

@@ -2,7 +2,7 @@
 
 public class TextInfo
 {
-    public string Text { get; set; } = $"<size=5>Your server name</size>";
+    public string Text { get; set; }
 
     public float PositionX { get; set; }
     public float PositionY { get; set; }
