@@ -1,0 +1,5 @@
+{
+  "DefaultText": "<size=5>Hello <color=orange>{username}</color></size>",
+  "DefaultPortalText": "<size=5>{server}\n<color=green>{online}</color>/<color=orange>{max_players}</color> {queue_count}</size>",
+  "UnknownPortal": "<color=red>Unknown</color>"
+}
